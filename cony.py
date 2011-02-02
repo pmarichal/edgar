@@ -33,12 +33,12 @@ except ImportError, e:
     #SERVER_CGI = True
 
 
-def cmd_g(term):
+def default_cmd_g(term):
     """Google search."""
     redirect('http://www.google.com/search?q=%s' % term)
 
 
-def cmd_pypi(term):
+def default_cmd_pypi(term):
     """Python package index search.
 
     If there is exact match, then redirects right to the package's page.
@@ -56,12 +56,10 @@ def cmd_pypi(term):
     redirect('http://pypi.python.org/pypi?:action=search&term=%s&submit=search' % term)
 
 
-def cmd_p(term):
+def default_cmd_p(term):
     """Python documentation search."""
     redirect('http://docs.python.org/search.html?q=%s&check_keywords=yes&area=default' % term)
 
-
-cmd_fallback = cmd_g
 
 # Templates related part
 
@@ -134,15 +132,7 @@ class VerySimpleTemplate(SimpleTemplate):
         )
 
 
-try:
-    from local_commands import *
-    if 'TEMPLATES' in locals():
-        _TEMPLATES.update(TEMPLATES)
-except ImportError:
-    pass
-
-
-def cmd_help(term):
+def default_cmd_help(term):
     """Shows all available commands."""
     items = []
     for name, obj in sorted(globals().items()):
@@ -152,6 +142,23 @@ def cmd_help(term):
             else:
                 items.append((name[4:], obj.__doc__))
     return dict(items = items, title = u'Help — Cony')
+
+
+try:
+    from local_commands import *
+    if 'TEMPLATES' in locals():
+        _TEMPLATES.update(TEMPLATES)
+except ImportError, e:
+    if not e.args or e.args[0] != 'No module named local_commands':
+        raise
+
+    cmd_p = default_cmd_p
+    cmd_pypi = default_cmd_pypi
+    cmd_g = default_cmd_g
+if not 'cmd_help' in locals():
+    cmd_help = default_cmd_help
+if not 'cmd_fallback' in locals():
+    cmd_fallback = default_cmd_g
 
 
 @route('/')

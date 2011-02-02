@@ -147,7 +147,60 @@ location bar in Chrome.
 For Safari you could try to install [Keywurl][] plugin. And add a `Cony`
 as default search.
 
+Creating Custom Commands
+------------------------
+
+Cony defines some default commands ("g", "p", and "pypi", as well as a
+general "help" command).  However, you can also create your own commands
+by placing them in a `local_commands` module.
+
+If you define a "cmd_fallback" function (which is probably just set to
+another function, like "cmd_fallback = cmd_g"), then this will be used if
+no other command is matched.  Similarly, if no "cmd_help" is defined, a
+default one will be used which shows the [docstrings][] of the commands.
+
+If you define your own `local_commands` module, the default "g", "p" and
+"pypi" commands are not included.  If you do not define a "cmd_fallback",
+then the default "cmd_g" is used, doing a Google search.
+
+For example, here is a simple `local_commands` module that uses the default
+"g", "p", and "pypi" commands, uses the default fallback and help commands
+(as described above), and creates a "weather" command with an alias "w":
+
+   import cony
+   from bottle import redirect
+
+   cmd_g = cony.default_cmd_g
+   cmd_p = cony.default_cmd_p
+   cmd_pypi = cony.default_cmd_pypi
+
+   #  local templates
+   TEMPLATES = dict(
+      weather = """
+         <p />Display the weather in the specified location.  For example,
+         you could enter the following locations:
+         <dl class="help">
+         %for example in examples:
+         <dt>{{ example }}</dt>
+         %end
+         </dl>
+         %rebase layout title = 'Weather Help'
+         """,
+      )
+
+   def cmd_weather(term):
+      '''Look up weather forecast in the specified location.'''
+      examples = [ 'Moscow, Russia', 'Fort Collins, Colorado' ]
+      if term and term != 'help':
+         redirect('http://weather.yahoo.com/search/weather?location=%s' % term)
+      else:
+         #  render the "weather" template defined above, pass "examples"
+         return dict(examples = examples)
+
+   cmd_w = cmd_weather
+
 
 [smart-bm]: http://en.wikipedia.org/wiki/Smart_bookmark
 [bunny1]: https://github.com/facebook/bunny1
 [Keywurl]: http://alexstaubo.github.com/keywurl/
+[docstrings]: http://en.wikipedia.org/wiki/Docstring#Python
