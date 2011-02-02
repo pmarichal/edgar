@@ -101,7 +101,7 @@ _TEMPLATES = dict( # {{{
             %include
             <footer>
                 <p class="copyright">Opensource. By <a href="mailto:svetlyak.40wt@gmail.com">Alexander Artemenko</a>. <a href="http://github.com/svetlyak40wt/cony/">Fork it</a> at the GitHub.</p>
-                <p class="thanks">Idea was stolen from Facebook's <a href="https://github.com/facebook/bunny1/">bunny1</a>, thanks them a lot.</p>
+                <p class="thanks">Idea was stolen from Facebook's <a href="https://github.com/facebook/bunny1/">bunny1</a>, many thanks to them.</p>
             </footer>
         </div>
     </body>
