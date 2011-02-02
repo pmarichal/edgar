@@ -167,37 +167,37 @@ For example, here is a simple `local_commands` module that uses the default
 "g", "p", and "pypi" commands, uses the default fallback and help commands
 (as described above), and creates a "weather" command with an alias "w":
 
-   import cony
-   from bottle import redirect
+    import cony
+    from bottle import redirect
 
-   cmd_g = cony.default_cmd_g
-   cmd_p = cony.default_cmd_p
-   cmd_pypi = cony.default_cmd_pypi
+    cmd_g = cony.default_cmd_g
+    cmd_p = cony.default_cmd_p
+    cmd_pypi = cony.default_cmd_pypi
 
-   #  local templates
-   TEMPLATES = dict(
-      weather = """
-         <p />Display the weather in the specified location.  For example,
-         you could enter the following locations:
-         <dl class="help">
-         %for example in examples:
-         <dt>{{ example }}</dt>
-         %end
-         </dl>
-         %rebase layout title = 'Weather Help'
-         """,
-      )
+    #  local templates
+    TEMPLATES = dict(
+       weather = """
+          <p />Display the weather in the specified location.  For example,
+          you could enter the following locations:
+          <dl class="help">
+          %for example in examples:
+          <dt>{{ example }}</dt>
+          %end
+          </dl>
+          %rebase layout title = 'Weather Help'
+          """,
+       )
 
-   def cmd_weather(term):
-      '''Look up weather forecast in the specified location.'''
-      examples = [ 'Moscow, Russia', 'Fort Collins, Colorado' ]
-      if term and term != 'help':
-         redirect('http://weather.yahoo.com/search/weather?location=%s' % term)
-      else:
-         #  render the "weather" template defined above, pass "examples"
-         return dict(examples = examples)
-
-   cmd_w = cmd_weather
+    def cmd_weather(term):
+       '''Look up weather forecast in the specified location.'''
+       examples = [ 'Moscow, Russia', 'Fort Collins, Colorado' ]
+       if term and term != 'help':
+          redirect('http://weather.yahoo.com/search/weather?location=%s' % term)
+       else:
+          #  render the "weather" template defined above, pass "examples"
+          return dict(examples = examples)
+ 
+    cmd_w = cmd_weather
 
 
 [smart-bm]: http://en.wikipedia.org/wiki/Smart_bookmark
