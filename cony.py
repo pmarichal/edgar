@@ -1,10 +1,36 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bottle import route, run, debug, request, redirect
+from bottle import route, run, request, redirect
 from bottle import SimpleTemplate, template
+import bottle
 
-DEBUG = True
+try:
+    from conyconfig import *
+except ImportError, e:
+    if not e.args or e.args[0] != 'No module named conyconfig':
+        raise
+
+    ################
+    #  CONFIGURATION
+    #
+    #  These values can be moved out into a "conyconfig.py" file so that
+    #  your local changes don't require merging into new versions of cony.
+    ################
+    DEBUG = True
+
+    ################################################
+    #  Uncomment only one of these SERVER_* sections
+    ################################################
+    #  Stand-alone server running as a daemon on port 8080
+    SERVER_STANDALONE = True
+    SERVER_STANDALONE_PORT = 8080
+    SERVER_STANDALONE_HOST = 'localhost'
+    #SERVER_STANDALONE_HOST = ''    #  to allow on all interfaces
+
+    #SERVER_WSGI = True
+
+    #SERVER_CGI = True
 
 
 def cmd_g(term):
@@ -156,7 +182,19 @@ def do_command():
         return result
 
 
+#  "main loop" code
+if locals().get('DEBUG'): bottle.debug(DEBUG)
 if __name__ == '__main__':
-    debug(DEBUG)
-    run(reloader = DEBUG)
+    import sys
+    if locals().get('SERVER_STANDALONE'):
+        run(reloader = DEBUG, host = SERVER_STANDALONE_HOST,
+                port = SERVER_STANDALONE_PORT)
+    elif locals().get('SERVER_CGI'):
+        run(server = bottle.CGIServer)
+    else:
+        print 'No SERVER_* defined for running from command-line'
+        sys.exit(1)
+    sys.exit(0)
 
+if locals().get('SERVER_WSGI'):
+    application = bottle.app()
