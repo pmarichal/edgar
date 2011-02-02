@@ -3,7 +3,7 @@ Shared Smart Bookmarks Server
 
 "Cony" is a tool to write [smart bookmarks][smart-bm] in the python and
 to share them across all your browsers and with other developers
-on the GitHub. This project is inspired by Facebook's [bunny1][].
+on GitHub. This project is inspired by Facebook's [bunny1][].
 
 What the difference between Cony and Bunny1?
 --------------------------------------------
@@ -17,15 +17,17 @@ What the difference between Cony and Bunny1?
 Introduction
 ------------
 
-Smart bookmarks is a fast way to retrive information from the web.
-For example, you could write a `w smart bookmarks` in the browser's
-location bar and it will open a Wikipedia article about [smart bookmarks][smart-bm].
+Smart bookmarks are a fast way to retrive information from the web.
+For example, you could type `w smart bookmarks` in the browser's
+location bar and it will open the Wikipedia article about
+[smart bookmarks][smart-bm].
 
 If you use more than one browser or device, then you are in trouble,
-because you have to sync the browsers settings releated to smart bookmarks.
+because you have to sync the smart bookmarks of the various browsers.
 
-Cony not only solves this problem, creating one place were you store you
-smart bookmarks, but also, it makes your bookmarks MUCH MUCH SMARTER.
+Cony not only solves this problem, creating one place were you store your
+smart bookmarks, but also, it makes your bookmarks **much** **much**
+**smarter**.
 
 For example, you could create this bookmark which will choose the
 text translation mode depending on language:
@@ -38,9 +40,8 @@ text translation mode depending on language:
             direction = 'en|ru'
         redirect('http://translate.google.com/#%s|%s' % (direction, term))
 
-This bookmarks trying to figure out if query contains only ASCII
-characters and then translates text from English to Russian. Otherwise
-it translates in other direction.
+This bookmark converts from English to Russian if it contains only ASCII
+characters.  Otherwise it translates in other direction.
 
 There are many other applications of this small webserver.
 
@@ -48,7 +49,7 @@ There are many other applications of this small webserver.
 Installation
 ------------
 
-Few ways to install Cony:
+Ways to install Cony:
 
 * Just clone the repository and to run `./cony.py`.
 * `easy_install cony; cony.py`
@@ -57,25 +58,51 @@ Few ways to install Cony:
 Now you have server up and running. It binds to the localhost:8080 by
 default. Open the <http://localhost:8080> in your browser to see the help.
 
+Browser Configuration
+---------------------
+
 ### Firefox
 
-Type `about:config` into your location bar in Firefox.
-Set the value of `keyword.URL` to be `http://localhost/?s=`
-Now, type `pypi cony` into your location bar and hit enter.
+* Type `about:config` into your location bar in Firefox.
+* Set the value of `keyword.URL` to be `http://localhost/?s=`
+* Now, type `pypi cony` into your location bar and press ENTER.
+
+### Google Chromium
+
+* Click the "Wrench" to the right of the URL bar.
+* Click "Preferences".
+* Click "Search:", click on "Manage Search Engines".
+* Click "Add".
+   * Name: Cony
+   * Keyword: c
+   * URL: http://localhost:8080/?s=%s
+   * OK.
+* Select the "Cony" line.
+* Click "Make Default" in the upper right.
+* Close the window.
+* Type "pypi cony" in the URL bar and press ENTER.
+
 
 ### Google Chrome
 
-Choose `Options` from the wrench menu to the right of the location bar in Chrome,
-then under the section `Default Search`, click the `Manage` button. Click the
-`Add` button and then fill in the fields `name`, `keyword`, and `URL` with `Cony`, `c`,
-and `http://localhost:8080/?s=%s`. Hit `OK` and then select `Cony` from the list
-of search engines and hit the `Make Default` button to make it your default search
-engine. Now, type `pypi cony` into your location bar and hit enter.
+* Choose `Options` from the wrench menu to the right of the
+location bar in Chrome.
+* Under the section `Default Search`.
+* Click the `Manage` button.
+* Click the `Add` button and then fill in the fields:
+   * Name: Cony
+   * Keyword: c
+   * URL: http://localhost:8080/?s=%s
+   * OK.
+* Select the "Cony" line.
+* Click "Make Default" in the upper right.
+* Close the window.
+* Type "pypi cony" in the URL bar and press ENTER.
 
 ### Safari
 
-For Safari you could try to install [Keywurl][] plugin. And add a `Cony` as default
-search.
+For Safari you could try to install [Keywurl][] plugin. And add a `Cony`
+as default search.
 
 
 [smart-bm]: http://en.wikipedia.org/wiki/Smart_bookmark
