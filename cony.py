@@ -132,7 +132,7 @@ class VerySimpleTemplate(SimpleTemplate):
         )
 
 
-def default_cmd_help(term):
+def cmd_help(term):
     """Shows all available commands."""
     items = []
     for name, obj in sorted(globals().items()):
@@ -155,8 +155,6 @@ except ImportError, e:
     cmd_p = default_cmd_p
     cmd_pypi = default_cmd_pypi
     cmd_g = default_cmd_g
-if not 'cmd_help' in locals():
-    cmd_help = default_cmd_help
 if not 'cmd_fallback' in locals():
     cmd_fallback = default_cmd_g
 
