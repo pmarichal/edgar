@@ -5,23 +5,15 @@ from urllib import quote_plus as qp
 ################
 #  CONFIGURATION
 #
-#  These values can be moved out into a "local_settings.py" file so that
+#  These values can be overridden in a "local_settings.py" file so that
 #  your local changes don't require merging into new versions of cony.
 ################
+
 DEBUG = True
-
-################################################
-#  Uncomment only one of these SERVER_* sections
-################################################
 #  Stand-alone server running as a daemon on port 8080
-SERVER_STANDALONE = True
-SERVER_STANDALONE_PORT = 8080
-SERVER_STANDALONE_HOST = 'localhost'
-#SERVER_STANDALONE_HOST = ''    #  to allow on all interfaces
-
-#SERVER_WSGI = True
-
-#SERVER_CGI = True
+SERVER_MODE = 'STANDALONE' # or 'WSGI', or 'CGI'
+SERVER_PORT = 8080
+SERVER_HOST = 'localhost'  # or '' to allow on all interfaces
 
 #  local templates
 TEMPLATES = dict(
