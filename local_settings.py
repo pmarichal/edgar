@@ -76,7 +76,7 @@ TEMPLATES = dict(
            %include
            <footer>
                <p class="copyright">Opensource. By <a href="http://pmarichal.net/">Philippe Marichal</a>. <a href="https://github.com/pmarichal/edgar">Fork it</a> at the GitHub.</p>
-               <p class="thanks"><a href="http://pmarichal.net/2011/02/01/edgar/">Edgar</a> is a fork from <a href="https://github.com/svetlyak40wt/cony">cony</a> by Alexander Artemenko. Original idea was stolen from Facebook's <a href="https://github.com/facebook/bunny1/">bunny1</a>, many thanks to them.</p>
+               <p class="thanks"><a href="http://pmarichal.net/geekeries/2011/02/03/edgar/">Edgar</a> is a fork from <a href="https://github.com/svetlyak40wt/cony">cony</a> by Alexander Artemenko. Original idea was stolen from Facebook's <a href="https://github.com/facebook/bunny1/">bunny1</a>, many thanks to them.</p>
            </footer>
        </div>
    </body>
