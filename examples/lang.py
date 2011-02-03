@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import datetime
 import os.path
 import urllib
+
 from bottle import redirect
 
-def cmd_tr(term):
+def cmd_translate(term):
     """Translates the text using Google Translate."""
     if len(term.decode('utf-8')) < len(term):
         direction = 'ru|en'
@@ -11,24 +13,37 @@ def cmd_tr(term):
         direction = 'en|ru'
     redirect('http://translate.google.com/#%s|%s' % (direction, term))
 
-def cmd_save_word(term):
-    """Saves word and it's translation into the ~/.words
+cmd_tr = cmd_translate
 
-    This file could be used to import words into
-    the FlashCards ToGo.
+
+def cmd_save_word(term):
+    """Saves word and it's translation into the  ~/.words/YYYY-MM-DD.txt
+
+    These files could be used to import words into the FlashCards ToGo.
     """
+    if ';' not in term:
+        return cmd_search_word(term)
+
+    filename = datetime.datetime.now().strftime('~/.words/%Y-%m-%d.txt')
 
     template = """
-    <p>Translation "{{ word }}" was saved to ~/.words</p>
-    %rebase layout title='Translation saved'
-    """
+    <p>Translation "{{ word }}" was saved to %s</p>
+    %%rebase layout title='Translation saved'
+    """ % filename
 
-    with open(os.path.expanduser('~/.words'), 'a+') as f:
+    filename = os.path.expanduser(filename)
+    dirname = os.path.dirname(filename)
+
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
+
+    with open(filename, 'a+') as f:
         f.write(term)
         f.write('\n')
     return dict(template=template, word=term)
 
-def cmd_wo(term):
+
+def cmd_search_word(term):
     """Searches word translations at the http://slovari.yandex.ru.
 
     This command requires `simplejson` module to be installed.
@@ -59,3 +74,4 @@ def cmd_wo(term):
 
     return dict(template=template, variants=sorted(variants.values()))
 
+cmd_wo = cmd_search_word

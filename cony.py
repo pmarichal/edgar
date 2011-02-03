@@ -1,44 +1,39 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bottle import route, run, request, redirect
-from bottle import SimpleTemplate, template
+import sys
 import bottle
 
-try:
-    from conyconfig import *
-except ImportError, e:
-    if not e.args or e.args[0] != 'No module named conyconfig':
-        raise
+from bottle import SimpleTemplate, template
+from bottle import route, run, request, redirect
+from itertools import groupby
 
-    ################
-    #  CONFIGURATION
-    #
-    #  These values can be moved out into a "conyconfig.py" file so that
-    #  your local changes don't require merging into new versions of cony.
-    ################
-    DEBUG = True
+################
+#  CONFIGURATION
+#
+#  These values can be overridden in a "local_settings.py" file so that
+#  your local changes don't require merging into new versions of cony.
+################
 
-    ################################################
-    #  Uncomment only one of these SERVER_* sections
-    ################################################
-    #  Stand-alone server running as a daemon on port 8080
-    SERVER_STANDALONE = True
-    SERVER_STANDALONE_PORT = 8080
-    SERVER_STANDALONE_HOST = 'localhost'
-    #SERVER_STANDALONE_HOST = ''    #  to allow on all interfaces
-
-    #SERVER_WSGI = True
-
-    #SERVER_CGI = True
+DEBUG = True
+#  Stand-alone server running as a daemon on port 8080
+SERVER_MODE = 'STANDALONE' # or 'WSGI', or 'CGI'
+SERVER_PORT = 8080
+SERVER_HOST = 'localhost'  # or '' to allow on all interfaces
 
 
-def default_cmd_g(term):
+##################
+# Default commands
+##################
+
+def cmd_g(term):
     """Google search."""
     redirect('http://www.google.com/search?q=%s' % term)
 
+cmd_fallback = cmd_g
 
-def default_cmd_pypi(term):
+
+def cmd_pypi(term):
     """Python package index search.
 
     If there is exact match, then redirects right to the package's page.
@@ -56,12 +51,48 @@ def default_cmd_pypi(term):
     redirect('http://pypi.python.org/pypi?:action=search&term=%s&submit=search' % term)
 
 
-def default_cmd_p(term):
+def cmd_p(term):
     """Python documentation search."""
     redirect('http://docs.python.org/search.html?q=%s&check_keywords=yes&area=default' % term)
 
 
+def cmd_help(term):
+    """Shows all available commands."""
+    items = []
+
+    # functions should be sorted by value
+    # because we will group them lately
+    functions = sorted(globals().items(), key=lambda x: x[1])
+
+    commands = (
+        (cmd, name)
+        for name, cmd in functions
+        if name != 'cmd_fallback' and name.startswith('cmd_') and callable(cmd)
+    )
+
+    commands = groupby(commands, lambda x: x[0])
+
+    # "list" of (func, (cmd_example, cmd_exmpl, cmd_ex, ...)) tuples
+    # names are sorted by length
+    commands = (
+        (cmd, sorted(map(lambda x: x[1][4:], values), key=lambda x: len(x), reverse=True))
+        for cmd, values in commands
+    )
+
+    # and finally, sort by name
+    commands = sorted(commands, key=lambda x: x[1])
+
+    for cmd, names in commands:
+        names = ', '.join(names)
+        if cmd is cmd_fallback:
+            names += ' (default)'
+        items.append((names, cmd.__doc__))
+
+    return dict(items = items, title = u'Help — Cony')
+
+########################
 # Templates related part
+########################
 
 _TEMPLATES = dict( # {{{
     layout = """
@@ -132,31 +163,12 @@ class VerySimpleTemplate(SimpleTemplate):
         )
 
 
-def cmd_help(term):
-    """Shows all available commands."""
-    items = []
-    for name, obj in sorted(globals().items()):
-        if name != 'cmd_fallback' and name.startswith('cmd_') and callable(obj):
-            if obj is cmd_fallback:
-                items.append((name[4:] + ' (default)', obj.__doc__))
-            else:
-                items.append((name[4:], obj.__doc__))
-    return dict(items = items, title = u'Help — Cony')
-
-
 try:
-    from local_commands import *
+    from local_settings import *
     if 'TEMPLATES' in locals():
         _TEMPLATES.update(TEMPLATES)
-except ImportError, e:
-    if not e.args or e.args[0] != 'No module named local_commands':
-        raise
-
-    cmd_p = default_cmd_p
-    cmd_pypi = default_cmd_pypi
-    cmd_g = default_cmd_g
-if not 'cmd_fallback' in locals():
-    cmd_fallback = default_cmd_g
+except ImportError:
+    pass
 
 
 @route('/')
@@ -177,7 +189,11 @@ def do_command():
     if isinstance(result, dict):
         # Command could return a dict
         # in that case, we have to render it first
-        name = result.pop('template', command_name)
+
+        # here we have to take original function's name
+        # to work with aliases
+        original_cmd_name = command.__name__[4:]
+        name = result.pop('template', original_cmd_name)
         kwargs = dict(
             title = None,
         )
@@ -187,19 +203,21 @@ def do_command():
         return result
 
 
-#  "main loop" code
-if locals().get('DEBUG'): bottle.debug(DEBUG)
-if __name__ == '__main__':
-    import sys
-    if locals().get('SERVER_STANDALONE'):
-        run(reloader = DEBUG, host = SERVER_STANDALONE_HOST,
-                port = SERVER_STANDALONE_PORT)
-    elif locals().get('SERVER_CGI'):
-        run(server = bottle.CGIServer)
+bottle.debug(DEBUG)
+
+if SERVER_MODE == 'WSGI':
+    application = bottle.app()
+
+elif __name__ == '__main__':
+    if SERVER_MODE == 'STANDALONE':
+        run(
+            reloader=DEBUG,
+            host=SERVER_HOST,
+            port=SERVER_PORT,
+        )
+    elif SERVER_MODE == 'CGI':
+        run(server=bottle.CGIServer)
     else:
-        print 'No SERVER_* defined for running from command-line'
+        print 'Wrong SERVER_MODE=%r defined for running from command-line' % (SERVER_MODE,)
         sys.exit(1)
     sys.exit(0)
-
-if locals().get('SERVER_WSGI'):
-    application = bottle.app()

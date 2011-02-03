@@ -67,11 +67,9 @@ an existing web server such as Apache.
 
 ### Apache CGI
 
-In the top of "cony.py" comment out the other `SERVER_*` lines and
-uncomment `SERVER_CGI` **or** create "conyconfig.py" which contains:
+Create "local_settings.py" which contains:
 
-    DEBUG = True
-    SERVER_CGI = True
+    SERVER_MODE = 'CGI'
 
 In your Apache configuration, add:
 
@@ -83,11 +81,9 @@ configuration.
 
 ### Apache WSGI
 
-In the top of "cony.py" comment out the other `SERVER_*` lines and
-uncomment `SERVER_WSGI` **or** create "conyconfig.py" which contains:
+Create "local_settings.py" which contains:
 
-    DEBUG = True
-    SERVER_WSGI = True
+    SERVER_MODE = 'WSGI'
 
 Install mod_wsgi ("apt-get install libapache2-mod-wsgi" or "yum install
 mod_wsgi").
@@ -152,27 +148,26 @@ Creating Custom Commands
 
 Cony defines some default commands ("g", "p", and "pypi", as well as a
 general "help" command).  However, you can also create your own commands
-by placing them in a `local_commands` module.
+by placing them in a `local_settings.py`.
 
-If you define a "cmd_fallback" function (which is probably just set to
-another function, like "cmd_fallback = cmd_g"), then this will be used if
-no other command is matched.  Similarly, if no "cmd_help" is defined, a
-default one will be used which shows the [docstrings][] of the commands.
+If you define a `cmd_fallback` function (which is probably just set to
+another function, like `cmd_fallback = cmd_g`), then this will be used if
+no other command is matched. If you do not define a "cmd_fallback", then
+the default "cmd_g" is used, doing a Google search. Similarly, if no
+`cmd_help` is defined, a default one will be used which shows the
+[docstrings][] of the commands.
 
-If you define your own `local_commands` module, the default "g", "p" and
-"pypi" commands are not included.  If you do not define a "cmd_fallback",
-then the default "cmd_g" is used, doing a Google search.
+Cony's default commands can be overridden or turned off. To turn a command
+off, just assign it none in your `local_settings.py`: `cmd_g = None`.
 
-For example, here is a simple `local_commands` module that uses the default
-"g", "p", and "pypi" commands, uses the default fallback and help commands
-(as described above), and creates a "weather" command with an alias "w":
+Also, commands can be aliased: `cmd_tl = cmd_too_long`.
 
-    import cony
+For example, here is a simple `local_settings.py` config that uses the
+default "g", and "p", but not "pypi" commands, uses the default fallback
+and help commands (as described above), and creates a "weather" command
+with an alias "w":
+
     from bottle import redirect
-
-    cmd_g = cony.default_cmd_g
-    cmd_p = cony.default_cmd_p
-    cmd_pypi = cony.default_cmd_pypi
 
     #  local templates
     TEMPLATES = dict(
@@ -181,7 +176,7 @@ For example, here is a simple `local_commands` module that uses the default
           you could enter the following locations:
           <dl class="help">
           %for example in examples:
-          <dt>{{ example }}</dt>
+          <dt><a href="/?s=weather {{ example }}">{{ example }}</a></dt>
           %end
           </dl>
           %rebase layout title = 'Weather Help'
@@ -196,9 +191,16 @@ For example, here is a simple `local_commands` module that uses the default
        else:
           #  render the "weather" template defined above, pass "examples"
           return dict(examples = examples)
- 
-    cmd_w = cmd_weather
 
+    cmd_w = cmd_weather
+    cmd_pypi = None
+
+
+Contributors
+------------
+
+* Alexander Artemenko (author)
+* Sean Reifschneider
 
 [smart-bm]: http://en.wikipedia.org/wiki/Smart_bookmark
 [bunny1]: https://github.com/facebook/bunny1

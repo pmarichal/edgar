@@ -7,6 +7,7 @@ def cmd_fl(term):
 
 
 def cmd_pep(term):
+    """Search a Python Enhancement Proposal by it's number. For example: 'pep 8'."""
     redirect('http://www.python.org/dev/peps/pep-%0.4d/' % int(term))
 
 
