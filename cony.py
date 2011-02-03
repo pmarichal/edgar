@@ -5,7 +5,7 @@ import sys
 import bottle
 
 from bottle import SimpleTemplate, template
-from bottle import route, run, request, redirect
+from bottle import route, run, request, redirect, static_file
 from itertools import groupby
 
 ################
@@ -202,6 +202,10 @@ def do_command():
     else:
         return result
 
+@route('/favicon.ico')
+def static():
+    "server favicon.ico"
+    return static_file('favicon.ico', root='.')
 
 bottle.debug(DEBUG)
 
