@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from bottle import redirect
+from urllib import quote_plus as qp
 
 ################
 #  CONFIGURATION
@@ -160,3 +161,31 @@ def cmd_dj(term):
     redirect(
         'http://docs.djangoproject.com/search/?q=%s&release=1' % term
     )
+
+def cmd_yt(term):
+    """Searches YouTube or goes to it"""
+    if term:
+        redirect("http://www.youtube.com/results?search_query=%s&search_type=&aq=-1&oq=" % term)
+    else:
+        redirect("http://www.youtube.com/")
+
+def cmd_imdb(term):
+    """Searches Imdb or goes to it"""
+    if term:
+        redirect("http://www.imdb.com/find?s=all&q=%s" % qp(term))
+    else:
+        redirect("http://www.imdb.com/")
+
+def cmd_tv(term):
+    """Searches tvrage or goes to it"""
+    if term:
+        redirect("http://www.tvrage.com/search.php?search=%s" % qp(term))
+    else:
+        redirect("http://www.tvrage.com/")
+        
+def cmd_wi(term):
+    """Searches Wikipedia or goes to it"""
+    if term:
+        redirect("http://www.wikipedia.org/search-redirect.php?search=%s&language=en&go=++%%E2%%86%%92++&go=Go" % qp(term))
+    else:
+        redirect("http://www.wikipedia.org/")
