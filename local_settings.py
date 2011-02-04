@@ -182,3 +182,7 @@ def cmd_wi(term):
         redirect("http://www.wikipedia.org/search-redirect.php?search=%s&language=en&go=++%%E2%%86%%92++&go=Go" % qp(term))
     else:
         redirect("http://www.wikipedia.org/")
+
+def cmd_man(term):
+    """Gives the man page for the specified unix command."""
+    redirect ("http://man.cx/%s" % term)
