@@ -146,6 +146,7 @@ def cmd_fl(term):
     redirect('http://www.flickr.com/search/?q=%s&l=cc&ss=0&ct=0&mt=all&w=all&adv=1' % term)
 
 def cmd_pep(term):
+    """Search a Python Enhancement Proposal by it's number. For example: 'pep 8'."""
     redirect('http://www.python.org/dev/peps/pep-%0.4d/' % int(term))
 
 def cmd_dj(term):
