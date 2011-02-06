@@ -186,3 +186,7 @@ def cmd_wi(term):
 def cmd_man(term):
     """Gives the man page for the specified unix command."""
     redirect ("http://man.cx/%s" % term)
+    
+def cmd_cj(verb):
+    """Montre la conjugaison du verbe sur leconjugueur.com"""
+    redirect ("http://www.leconjugueur.com/la/conjugaison/du/verbe/%s.html" % qp(verb))
